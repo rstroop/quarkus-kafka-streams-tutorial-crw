@@ -28,6 +28,8 @@ public class TopologyProducer {
     public Topology buildTopology() {
         StreamsBuilder builder = new StreamsBuilder();
 
+        // Create a ObjectMapperSerde (Serialiser/Deserialiser) that 
+        // can serialize/deserialize Price objects to/from JSON
         ObjectMapperSerde<Price> PriceSerde = new ObjectMapperSerde<>(Price.class);
 
         builder.stream(
@@ -37,7 +39,8 @@ public class TopologyProducer {
             .map((k, v) -> {
                 Log.infov("converting: {0}:", v);
                 
-                // Don't get too caught up with math here. It's ony an example:
+                // Don't get too caught up with the rounding math here. It's
+                // only an example anyways. Enjoy this Office Space clip:
                 // https://www.youtube.com/watch?v=yZjCQ3T5yXo
                 BigDecimal bd = BigDecimal
                     .valueOf(Double.valueOf(v.getPrice()))
@@ -48,12 +51,16 @@ public class TopologyProducer {
                     .setScale(2, RoundingMode.HALF_UP)
                     .toPlainString();
                 
+                // Modify the in-memory Price record with the new EUR value
                 v.setCurrency("EUR");
                 v.setPrice(eurPrice);
 
+                // Return a Key-Value pair using the incoming UUID as the
+                // key and the modified Price as the value
                 return KeyValue.pair(k, v);
             })
             .to(
+                // Write the new Price record to the "eur-prices" Topic
                 EUR_PRICES_TOPIC,
                 Produced.with(Serdes.String(), PriceSerde)
             );
