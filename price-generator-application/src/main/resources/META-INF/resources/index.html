@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Prices</title>
+
+  <!-- UIkit CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.11.1/dist/css/uikit.min.css" />
+
+  <!-- UIkit JS -->
+  <script src="https://cdn.jsdelivr.net/npm/uikit@3.11.1/dist/js/uikit.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/uikit@3.11.1/dist/js/uikit-icons.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+  <style>
+    /* p {
+      font-size: 12pt;
+    } */
+  </style>
+</head>
+
+<body>
+  <div class="uk-container">
+
+    <div class="uk-padding-small">
+      <p class="uk-text-lead">Price List</p>
+      <p class="uk-text-meta uk-text-default">This list is generated from the Topic named "usd-prices", and updated when a matching
+        entry from the "eur-prices" Topic is streamed to the UI. Stop the Kafka Streams application, and restart it after a few seconds to see what happens to the EUR columns.</p>
+    </div>
+    <table style="display: none; margin-bottom: 2em; text-align: center;" class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+      <caption></caption>
+      <thead>
+        <tr>
+          <th style="text-align: center;" class="uk-table-expand">Timestamp</th>
+          <th style="text-align: center;" class="uk-table-expand">&dollar; / USD</th>
+          <th style="text-align: center;" class="uk-table-expand">&euro; / EUR</th>
+          <th style="text-align: center;">UUID</th>
+        </tr>
+      </thead>
+      <!-- <tfoot>
+        <tr>
+          <td></td>
+        </tr>
+      </tfoot> -->
+      <tbody id="table-rows"></tbody>
+    </table>
+  </div>
+</body>
+
+<script>
+  const tableRows = document.getElementById("table-rows")
+  const usdSource = new EventSource("/prices/usd/stream");
+  const eurSource = new EventSource("/prices/eur/stream");
+
+  eurSource.onmessage = function onEurMsg(event) {
+    // Kafka is fast, so we add a very small delay here! This is so viewers
+    // can see that the EUR value arrives separately to the USD value.
+    setTimeout(() => {
+      console.log('EUR Event', event)
+    
+      const data = JSON.parse(event.data)
+
+      const eurTd = document.querySelector(`#uuid-${data.uuid} .eur`)
+      const row = document.querySelector(`#uuid-${data.uuid}`)
+
+      if (!eurTd || !row) {
+        console.error('failed to find matching USD row for EUR payload', data)
+      }
+
+      eurTd.innerHTML = data.price
+      eurTd.className = 'animate__animated animate__rubberBand'
+    }, 500)
+  }
+
+  usdSource.onmessage = function onUsdMsg(event) {
+    // Make table visible
+    document.querySelector('table').style.display=''
+
+    console.log('USD Event', event)
+
+    const data = JSON.parse(event.data)
+
+
+    const row = document.createElement('tr')
+    const uuidEl = document.createElement('td')
+    const tsEl = document.createElement('td')
+    const usdEl = document.createElement('td')
+    const eurEl = document.createElement('td')
+
+    row.className = 'animate__animated animate__flash'
+    row.id = `uuid-${data.uuid}`
+
+    uuidEl.innerHTML = `${data.uuid}`
+    tsEl.innerHTML = new Date().toLocaleString()
+    usdEl.innerHTML = data.price
+    eurEl.className = 'eur'
+
+    row.append(tsEl, usdEl, eurEl, uuidEl)
+    tableRows.prepend(row)
+
+    if (tableRows.children.length > 15) {
+      tableRows.removeChild(tableRows.lastChild)
+    }
+  };
+</script>
+
+</html>
