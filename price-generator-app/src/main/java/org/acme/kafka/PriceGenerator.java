@@ -25,28 +25,32 @@ public class PriceGenerator {
     @Outgoing("generated-prices")
     public Multi<KafkaRecord<String, String>> generate() {
         return Multi.createFrom().ticks().every(Duration.ofSeconds(5))
-                .onOverflow().drop()
-                .map(tick -> {
-                    // Get a random price between 1000 and 100 cents
-                    Integer cents = random.nextInt(1000 - 100) + 100;
+            .onOverflow().drop()
+            .map(tick -> {
+                // Get a random price between 1000 and 100 cents
+                Integer cents = random.nextInt(1000 - 100) + 100;
 
-                    // Convert into dollars
-                    String dollars = BigDecimal
-                        .valueOf(Double.valueOf(cents.doubleValue() / 100))
-                        .setScale(2)
-                        .toPlainString();
+                // Convert into dollar notation
+                String dollars = BigDecimal
+                    .valueOf(Double.valueOf(cents.doubleValue() / 100))
+                    .setScale(2)
+                    .toPlainString();
 
-                    Price generatedPrice = new Price(dollars, "USD");
+                Price generatedPrice = new Price(dollars, "USD");
 
-                    Log.infov("Generated a USD price entry: {0}", generatedPrice);
+                Log.infov("Generated a USD price entry: {0}", generatedPrice);
 
-                    return KafkaRecord.of(
-                        // Key is the unique ID of this generated USD price
-                        generatedPrice.getUuid(),
-                        // Value is the price object serialised as JSON
-                        JsonbBuilder.create().toJson(generatedPrice)
-                    );
-                });
+                // Return a Kafka record with a UUID string as the key and
+                // the Price object in stringified JSON format. This is
+                // written to the "generated-prices" channel. This channel
+                // is configured in the application.properties
+                return KafkaRecord.of(
+                    // Key is the unique ID of this generated USD price
+                    generatedPrice.getUuid(),
+                    // Value is the price object serialised as JSON
+                    JsonbBuilder.create().toJson(generatedPrice)
+                );
+            });
     }
 
 }
