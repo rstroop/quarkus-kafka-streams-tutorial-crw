@@ -15,37 +15,133 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
   <style>
-    /* p {
-      font-size: 12pt;
-    } */
+    .loading p {
+      text-align: center;
+    }
+
+    p.uk-text-lead, th {
+      text-align: center !important;
+    }
+
+    .loader {
+      font-size: 20px;
+      margin: 100px auto;
+      width: 1em;
+      height: 1em;
+      border-radius: 50%;
+      position: relative;
+      text-indent: -9999em;
+      -webkit-animation: load4 1.3s infinite linear;
+      animation: load4 1.3s infinite linear;
+      -webkit-transform: translateZ(0);
+      -ms-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+
+    @-webkit-keyframes load4 {
+
+      0%,
+      100% {
+        box-shadow: 0 -3em 0 0.2em, 2em -2em 0 0em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 0;
+      }
+
+      12.5% {
+        box-shadow: 0 -3em 0 0, 2em -2em 0 0.2em, 3em 0 0 0, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+      }
+
+      25% {
+        box-shadow: 0 -3em 0 -0.5em, 2em -2em 0 0, 3em 0 0 0.2em, 2em 2em 0 0, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+      }
+
+      37.5% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 0, 2em 2em 0 0.2em, 0 3em 0 0em, -2em 2em 0 -1em, -3em 0em 0 -1em, -2em -2em 0 -1em;
+      }
+
+      50% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 0em, 0 3em 0 0.2em, -2em 2em 0 0, -3em 0em 0 -1em, -2em -2em 0 -1em;
+      }
+
+      62.5% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 0, -2em 2em 0 0.2em, -3em 0 0 0, -2em -2em 0 -1em;
+      }
+
+      75% {
+        box-shadow: 0em -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0.2em, -2em -2em 0 0;
+      }
+
+      87.5% {
+        box-shadow: 0em -3em 0 0, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0, -2em -2em 0 0.2em;
+      }
+    }
+
+    @keyframes load4 {
+
+      0%,
+      100% {
+        box-shadow: 0 -3em 0 0.2em, 2em -2em 0 0em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 0;
+      }
+
+      12.5% {
+        box-shadow: 0 -3em 0 0, 2em -2em 0 0.2em, 3em 0 0 0, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+      }
+
+      25% {
+        box-shadow: 0 -3em 0 -0.5em, 2em -2em 0 0, 3em 0 0 0.2em, 2em 2em 0 0, 0 3em 0 -1em, -2em 2em 0 -1em, -3em 0 0 -1em, -2em -2em 0 -1em;
+      }
+
+      37.5% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 0, 2em 2em 0 0.2em, 0 3em 0 0em, -2em 2em 0 -1em, -3em 0em 0 -1em, -2em -2em 0 -1em;
+      }
+
+      50% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 0em, 0 3em 0 0.2em, -2em 2em 0 0, -3em 0em 0 -1em, -2em -2em 0 -1em;
+      }
+
+      62.5% {
+        box-shadow: 0 -3em 0 -1em, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 0, -2em 2em 0 0.2em, -3em 0 0 0, -2em -2em 0 -1em;
+      }
+
+      75% {
+        box-shadow: 0em -3em 0 -1em, 2em -2em 0 -1em, 3em 0em 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0.2em, -2em -2em 0 0;
+      }
+
+      87.5% {
+        box-shadow: 0em -3em 0 0, 2em -2em 0 -1em, 3em 0 0 -1em, 2em 2em 0 -1em, 0 3em 0 -1em, -2em 2em 0 0, -3em 0em 0 0, -2em -2em 0 0.2em;
+      }
+    }
   </style>
 </head>
 
 <body>
   <div class="uk-container">
-
     <div class="uk-padding-small">
       <p class="uk-text-lead">Price List</p>
-      <p class="uk-text-meta uk-text-default">This list is generated from the Topic named "usd-prices", and updated when a matching
-        entry from the "eur-prices" Topic is streamed to the UI. Stop the Kafka Streams application, and restart it after a few seconds to see what happens to the EUR columns.</p>
     </div>
-    <table style="display: none; margin-bottom: 2em; text-align: center;" class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
-      <caption></caption>
-      <thead>
-        <tr>
-          <th style="text-align: center;" class="uk-table-expand">Timestamp</th>
-          <th style="text-align: center;" class="uk-table-expand">&dollar; / USD</th>
-          <th style="text-align: center;" class="uk-table-expand">&euro; / EUR</th>
-          <th style="text-align: center;">UUID</th>
-        </tr>
-      </thead>
-      <!-- <tfoot>
-        <tr>
-          <td></td>
-        </tr>
-      </tfoot> -->
-      <tbody id="table-rows"></tbody>
-    </table>
+    
+    <div class="loading">
+      <div class="loader uk-text-primary">Loading...</div>
+      <p class="uk-text-meta">Waiting on first payload...</p>
+    </div>
+    
+    <div class="main" style="display: none;">
+      <p class="uk-text-meta uk-text-default">This list is generated from the Topic named "usd-prices", and updated when
+        a matching
+        entry from the "eur-prices" Topic is streamed to the UI. Stop the Kafka Streams application, and restart it
+        after a few seconds to see what happens to the EUR columns.</p>
+      <table style="margin-bottom: 2em; text-align: center;"
+        class="uk-table uk-table-divider uk-table-striped uk-table-hover uk-table-small">
+        <caption></caption>
+        <thead>
+          <tr>
+            <th class="uk-table-expand">Timestamp</th>
+            <th class="uk-table-expand">&dollar; / USD</th>
+            <th class="uk-table-expand">&euro; / EUR</th>
+            <th>UUID</th>
+          </tr>
+        </thead>
+        <tbody id="table-rows"></tbody>
+      </table>
+    </div>
   </div>
 </body>
 
@@ -59,7 +155,7 @@
     // can see that the EUR value arrives separately to the USD value.
     setTimeout(() => {
       console.log('EUR Event', event)
-    
+
       const data = JSON.parse(event.data)
 
       const eurTd = document.querySelector(`#uuid-${data.uuid} .eur`)
@@ -76,7 +172,8 @@
 
   usdSource.onmessage = function onUsdMsg(event) {
     // Make table visible
-    document.querySelector('table').style.display=''
+    document.querySelector('.main').style.display = ''
+    document.querySelector('.loading').style.display = 'none'
 
     console.log('USD Event', event)
 
