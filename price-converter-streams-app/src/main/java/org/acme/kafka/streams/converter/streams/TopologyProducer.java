@@ -36,6 +36,8 @@ public class TopologyProducer {
             USD_PRICES_TOPIC,
             Consumed.with(Serdes.String(), PriceSerde)
         )   
+            // A map operation allows us to perform a transformation on each
+            // record in the USD_PRICES_TOPIC and write that record elsewhere
             .map((k, v) -> {
                 Log.infov("converting: {0}:", v);
                 
