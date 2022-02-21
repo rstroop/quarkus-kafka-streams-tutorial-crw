@@ -66,7 +66,7 @@ commands:
         component: quarkus-maven
   - name: Start Development mode for generator (Hot reload + debug)
     actions:
-      - workdir: '${CHE_PROJECTS_ROOT}/quarkus-service-registry-consumer/price-converter-streams-app'
+      - workdir: '${CHE_PROJECTS_ROOT}/quarkus-kafka-streams-converter/price-converter-streams-app'
         type: exec
         command: './mvnw compile quarkus:dev'
         component: quarkus-maven
