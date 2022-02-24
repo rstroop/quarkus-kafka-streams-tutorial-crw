@@ -34,11 +34,14 @@ public class TopologyProducer {
 
         builder.stream(
             USD_PRICES_TOPIC,
+            // The record key is a String, and value is a Price object
+            // that's encoded in JSON format
             Consumed.with(Serdes.String(), PriceSerde)
         )   
-            // A map operation allows us to perform a transformation on each
-            // record in the USD_PRICES_TOPIC and write that record elsewhere
-            .map((k, v) -> {
+            // A mapValues operation allows us to perform a transformation on
+            // the value for each record in the USD_PRICES_TOPIC and write that
+            // record, while retaining the existing key, to another topic
+            .mapValues((v) -> {
                 Log.infov("converting: {0}:", v);
                 
                 // Don't get too caught up with the rounding math here. It's
@@ -59,7 +62,7 @@ public class TopologyProducer {
 
                 // Return a Key-Value pair using the incoming UUID as the
                 // key and the modified Price as the value
-                return KeyValue.pair(k, v);
+                return v;
             })
             .to(
                 // Write the new Price record to the "eur-prices" Topic
