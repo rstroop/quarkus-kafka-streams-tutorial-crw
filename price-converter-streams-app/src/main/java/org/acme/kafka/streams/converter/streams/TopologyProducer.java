@@ -55,16 +55,17 @@ public class TopologyProducer {
                     .setScale(2, RoundingMode.HALF_UP)
                     .toPlainString();
                 
-                // Modify the in-memory Price record with the new EUR value
+                // Modify the Price record with the new EUR value
                 v.setCurrency("EUR");
                 v.setPrice(eurPrice);
 
-                // Return a Key-Value pair using the incoming UUID as the
-                // key and the modified Price as the value
+                // Return the modified Price object as the new value
                 return v;
             })
             .to(
-                // Write the new Price record to the "eur-prices" Topic
+                // Write the updated Price record to the "eur-prices" Topic
+                // The original UUID key will be re-used, but the value now
+                // contains the EUR price and currency 
                 EUR_PRICES_TOPIC,
                 Produced.with(Serdes.String(), PriceSerde)
             );
