@@ -11,7 +11,8 @@ import org.reactivestreams.Publisher;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 
 /**
- * A simple resource retrieving the "in-memory" "my-data-stream" and sending the items to a server sent event.
+ * A simple resource retrieving the "usd-prices" and "eur-prices" records, and
+ * making them available from HTTP server sent events (SSE) endpoints.
  */
 @Path("/prices")
 public class PriceResource {

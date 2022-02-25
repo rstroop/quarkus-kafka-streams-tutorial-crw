@@ -13,8 +13,13 @@ import org.eclipse.microprofile.reactive.messaging.Outgoing;
 import org.jboss.logging.Logger;
 
 /**
- * A bean producing random prices every 5 seconds.
- * The prices are written to a Kafka topic (prices). The Kafka configuration is specified in the application configuration.
+ * A bean producing random Price objects every 5 seconds.
+ *
+ * The Price objects are serialised as JSON, and are written to a MicroProfile
+ * Reactive Messaging Channel. The Channel is configured to send data it has
+ * been passed to a Kafka topic.
+ * 
+ * The Channel configuration can be found in the application.properties file.
  */
 @ApplicationScoped
 public class PriceGenerator {
