@@ -147,60 +147,92 @@
 
 <script>
   const tableRows = document.getElementById("table-rows")
-  const usdSource = new EventSource("/prices/usd/stream");
-  const eurSource = new EventSource("/prices/eur/stream");
 
-  eurSource.onmessage = function onEurMsg(event) {
-    // Kafka is fast, so we add a very small delay here! This is so viewers
-    // can see that the EUR value arrives separately to the USD value.
-    setTimeout(() => {
-      console.log('EUR Event', event)
+  let usdSource, eurSource
+
+  setupUsdSSE()
+  setupEurSSE()
+
+  function setupUsdSSE () {
+    usdSource = new EventSource("/prices/usd/stream");
+
+    usdSource.onerror = function (e) {
+      console.error('USD SEE Error', e)
+      if (usdSource.readyState !== EventSource.CLOSED) {
+        usdSource.close()
+      }
+
+      // Wait a little and reconnect to the backend
+      setTimeout(() => setupUsdSSE(), 1000)
+    }
+
+    usdSource.onmessage = function onUsdMsg(event) {
+      // Make table visible, and hide the loading indicator
+      document.querySelector('.main').style.display = ''
+      document.querySelector('.loading').style.display = 'none'
+
+      console.log('USD Event', event)
 
       const data = JSON.parse(event.data)
 
-      const eurTd = document.querySelector(`#uuid-${data.uuid} .eur`)
-      const row = document.querySelector(`#uuid-${data.uuid}`)
 
-      if (!eurTd || !row) {
-        console.error('failed to find matching USD row for EUR payload', data)
+      const row = document.createElement('tr')
+      const uuidEl = document.createElement('td')
+      const tsEl = document.createElement('td')
+      const usdEl = document.createElement('td')
+      const eurEl = document.createElement('td')
+
+      row.className = 'animate__animated animate__flash'
+      row.id = `uuid-${data.uuid}`
+
+      uuidEl.innerHTML = `${data.uuid}`
+      tsEl.innerHTML = new Date().toLocaleString()
+      usdEl.innerHTML = data.price
+      eurEl.className = 'eur'
+
+      row.append(tsEl, usdEl, eurEl, uuidEl)
+      tableRows.prepend(row)
+
+      if (tableRows.children.length > 15) {
+        tableRows.removeChild(tableRows.lastChild)
       }
-
-      eurTd.innerHTML = data.price
-      eurTd.className = 'animate__animated animate__rubberBand'
-    }, 500)
+    };
   }
 
-  usdSource.onmessage = function onUsdMsg(event) {
-    // Make table visible
-    document.querySelector('.main').style.display = ''
-    document.querySelector('.loading').style.display = 'none'
+  function setupEurSSE () {
+    eurSource = new EventSource("/prices/eur/stream");
 
-    console.log('USD Event', event)
+    eurSource.onerror = function (e) {
+      console.error('EUR SEE Error', e)
+      if (eurSource.readyState !== EventSource.CLOSED) {
+        eurSource.close()
+      }
 
-    const data = JSON.parse(event.data)
-
-
-    const row = document.createElement('tr')
-    const uuidEl = document.createElement('td')
-    const tsEl = document.createElement('td')
-    const usdEl = document.createElement('td')
-    const eurEl = document.createElement('td')
-
-    row.className = 'animate__animated animate__flash'
-    row.id = `uuid-${data.uuid}`
-
-    uuidEl.innerHTML = `${data.uuid}`
-    tsEl.innerHTML = new Date().toLocaleString()
-    usdEl.innerHTML = data.price
-    eurEl.className = 'eur'
-
-    row.append(tsEl, usdEl, eurEl, uuidEl)
-    tableRows.prepend(row)
-
-    if (tableRows.children.length > 15) {
-      tableRows.removeChild(tableRows.lastChild)
+      // Wait a little and reconnect to the backend
+      setTimeout(() => setupEurSSE(), 1000)
     }
-  };
+
+    eurSource.onmessage = function onEurMsg(event) {
+      // Kafka is fast, so we add a very small delay here! This is so viewers
+      // can see that the EUR value arrives separately to the USD value.
+      setTimeout(() => {
+        console.log('EUR Event', event)
+
+        const data = JSON.parse(event.data)
+
+        const eurTd = document.querySelector(`#uuid-${data.uuid} .eur`)
+        const row = document.querySelector(`#uuid-${data.uuid}`)
+
+        if (!eurTd || !row) {
+          console.error('failed to find matching USD row for EUR payload', data)
+        }
+
+        eurTd.innerHTML = data.price
+        eurTd.className = 'animate__animated animate__rubberBand'
+      }, 500)
+    }
+  }
+  
 </script>
 
 </html>
