@@ -1,88 +1,63 @@
-apiVersion: 1.0.0
+schemaVersion: 2.1.0
 metadata:
-  generateName: quarkus-
+  name: quarkus
 projects:
   - name: quarkus-kafka-streams-converter
     source:
-      location: 'https://github.com/evanshortiss/quarkus-kafka-streams-tutorial-crw'
+      location: 'https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw'
       type: git
       sparseCheckoutDir: price-converter-streams-app
       branch: main
   - name: quarkus-kafka-streams-generator
     source:
-      location: 'https://github.com/evanshortiss/quarkus-kafka-streams-tutorial-crw'
+      location: 'https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw'
       type: git
       sparseCheckoutDir: price-generator-app
       branch: main
 components:
-  - mountSources: true
-    endpoints:
-      - attributes:
+  - name: tools
+    container:
+      image: registry.redhat.io/devspaces/udi-rhel8:3.1 
+      env:
+        - name: QUARKUS_HTTP_HOST
+          value: 0.0.0.0
+        - name: MAVEN_OPTS
+          value: $(JAVA_OPTS)
+        - name: JAVA_OPTS
+          value: '-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/user'
+      endpoints:
+        - exposure: none
+          name: debug
+          protocol: tcp
+          targetPort: 5005
+        - exposure: public
+          name: prices-ui
+          protocol: http
+          targetPort: 8080
           path: /index.html
-        name: prices-ui
-        port: 8080
-    command:
-      - tail
-    args:
-      - '-f'
-      - /dev/null
-    volumeMounts:
+      volumeMounts:
         - name: m2
           path: /home/user/.m2
-    memoryLimit: 32M
-    type: dockerimage
-    alias: ubi-minimal
-    image: registry.access.redhat.com/ubi8/ubi-minimal
-  - id: redhat/quarkus-java11/latest
-    type: chePlugin
-    registryUrl: 'https://eclipse-che.github.io/che-plugin-registry/7.38.0/v3/'
-  - mountSources: true
-    endpoints:
-      - attributes:
-          public: 'false'
-        name: debug
-        port: 5005
-      - attributes:
-          path: /index.html
-        name: prices-ui
-        port: 8080
-    memoryLimit: 4G
-    type: dockerimage
-    alias: quarkus-maven
-    image: 'quay.io/eclipse/che-quarkus:7.37.2'
-    env:
-      - value: '-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/user'
-        name: JAVA_OPTS
-      - value: $(JAVA_OPTS)
-        name: MAVEN_OPTS
-      - value: 0.0.0.0
-        name: QUARKUS_HTTP_HOST
+      memoryLimit: 32M
+      mountSources: true
+  - name: m2
+    volume:
+      size: 1G
 commands:
-  - name: Package
-    actions:
-      - workdir: '${CHE_PROJECTS_ROOT}/quarkus-kafka-streams-generator/price-generator-app'
-        type: exec
-        command: ./mvnw package
-        component: quarkus-maven
-  - name: Start Development mode for generator (Hot reload + debug)
-    actions:
-      - workdir: '${CHE_PROJECTS_ROOT}/quarkus-kafka-streams-converter/price-converter-streams-app'
-        type: exec
-        command: './mvnw compile quarkus:dev'
-        component: quarkus-maven
-  - name: Attach remote debugger
-    actions:
-      - referenceContent: |
-          {
-            "version": "0.2.0",
-            "configurations": [
-              {
-                "type": "java",
-                "request": "attach",
-                "name": "Attach to Remote Quarkus App",
-                "hostName": "localhost",
-                "port": 5005
-              }
-            ]
-          }
-        type: vscode-launch
+  - id: 1-package
+    exec:
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/quarkus-kafka-streams-generator/price-generator-app
+      commandLine: "mvn package"
+      group:
+        kind: build
+        isDefault: true
+  - id: 2-startdev
+    exec:
+      label: "Start Development mode (Hot reload + debug)"
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/quarkus-kafka-streams-converter/price-converter-streams-app
+      commandLine: "mvn compile quarkus:dev"
+      group:
+        kind: run
+        isDefault: true
