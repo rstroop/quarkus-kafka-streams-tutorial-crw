@@ -25,7 +25,7 @@ components:
         - sh
         - '-c'
         - '${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}'
-      image: 'registry.redhat.io/devspaces/udi-rhel8@sha256:d55549aad15742f6f7310da0c7abc1e65dd5d3ad2e3efb8fbf414cf91b9efac7' 
+      #image: 'registry.access.redhat.com/ubi8/ubi-minimal' 
       env:
         - name: QUARKUS_HTTP_HOST
           value: 0.0.0.0
@@ -67,19 +67,20 @@ components:
     volume:
       size: 1G
 commands:
-  - id: 1-package
+  - id: 1-generate
     exec:
+      label: "Start price generator"
       component: tools
-      workingDir: ${PROJECTS_ROOT}/quarkus-kafka-streams-generator/price-generator-app
-      commandLine: "mvn package"
+      workingDir: ${PROJECTS_ROOT}/quarkus-kafka-streams-tutorial/price-generator-app
+      commandLine: "mvn compile quarkus:dev"
       group:
-        kind: build
+        kind: run
         isDefault: true
-  - id: 2-startdev
+  - id: 2-convert
     exec:
-      label: "Start Development mode (Hot reload + debug)"
+      label: "Start price converter"
       component: tools
-      workingDir: ${PROJECTS_ROOT}/quarkus-kafka-streams-converter/price-converter-streams-app
+      workingDir: ${PROJECTS_ROOT}/quarkus-kafka-streams-tutorial/price-converter-streams-app
       commandLine: "mvn compile quarkus:dev"
       group:
         kind: run
