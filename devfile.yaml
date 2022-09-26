@@ -45,9 +45,6 @@ components:
         port: 8080
     memoryLimit: 4G
     type: dockerimage
-    volumes:
-      - name: m2
-        containerPath: /home/user/.m2
     alias: quarkus-maven
     image: 'quay.io/eclipse/che-quarkus:7.37.2'
     env:
