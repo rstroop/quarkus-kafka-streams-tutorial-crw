@@ -25,7 +25,7 @@ components:
         - sh
         - '-c'
         - '${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}'
-      #image: 'registry.access.redhat.com/ubi8/ubi-minimal' 
+      image: 'registry.access.redhat.com/ubi8/ubi-minimal' 
       env:
         - name: QUARKUS_HTTP_HOST
           value: 0.0.0.0
