@@ -8,14 +8,14 @@ projects:
         origin: "https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw"
       checkoutFrom:
         revision: main
-      sparseCheckoutDir: price-converter-streams-app
+    sparseCheckoutDir: price-converter-streams-app
   - name: quarkus-kafka-streams-generator
     git:
       remotes:
         origin: "https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw"
       checkoutFrom:
         revision: main
-      sparseCheckoutDir: price-generator-app
+    sparseCheckoutDir: price-generator-app
 components:
   - name: tools
     container:
