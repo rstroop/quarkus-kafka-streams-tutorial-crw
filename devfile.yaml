@@ -1,16 +1,16 @@
 schemaVersion: 2.1.0
 metadata:
   name: quarkus
-projects:
+starterProjects:
   - name: quarkus-kafka-streams-converter
-    sparseCheckoutDir: price-converter-streams-app
+    subDir: price-converter-streams-app
     git:
       remotes:
         origin: "https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw"
       checkoutFrom:
         revision: main
   - name: quarkus-kafka-streams-generator
-    sparseCheckoutDir: price-generator-app
+    subDir: price-generator-app
     git:
       remotes:
         origin: "https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw"
