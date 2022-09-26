@@ -26,6 +26,9 @@ components:
     args:
       - '-f'
       - /dev/null
+    volumeMounts:
+        - name: m2
+          path: /home/user/.m2
     memoryLimit: 32M
     type: dockerimage
     alias: ubi-minimal
