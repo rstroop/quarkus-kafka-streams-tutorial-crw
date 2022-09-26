@@ -3,17 +3,19 @@ metadata:
   name: quarkus
 projects:
   - name: quarkus-kafka-streams-converter
-    source:
-      location: 'https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw'
-      type: git
+    git:
+      remotes:
+        origin: "https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw"
+      checkoutFrom:
+        revision: main
       sparseCheckoutDir: price-converter-streams-app
-      branch: main
   - name: quarkus-kafka-streams-generator
-    source:
-      location: 'https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw'
-      type: git
+    git:
+      remotes:
+        origin: "https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw"
+      checkoutFrom:
+        revision: main
       sparseCheckoutDir: price-generator-app
-      branch: main
 components:
   - name: tools
     container:
