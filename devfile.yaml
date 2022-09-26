@@ -1,16 +1,8 @@
 schemaVersion: 2.1.0
 metadata:
   name: quarkus
-starterProjects:
-  - name: quarkus-kafka-streams-converter
-    subDir: price-converter-streams-app
-    git:
-      remotes:
-        origin: "https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw"
-      checkoutFrom:
-        revision: main
-  - name: quarkus-kafka-streams-generator
-    subDir: price-generator-app
+projects:
+  - name: quarkus-kafka-streams-tutorial
     git:
       remotes:
         origin: "https://github.com/rstroop/quarkus-kafka-streams-tutorial-crw"
@@ -18,8 +10,22 @@ starterProjects:
         revision: main
 components:
   - name: tools
+    attributes:
+      app.kubernetes.io/name: tools
+      che-theia.eclipse.org/vscode-extensions:
+        - 'relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-quarkus-1.7.0-437.vsix'
+        - 'relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/java-0.82.0-369.vsix'
+        - 'relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-microprofile-0.1.1-48.vsix'
+        - 'relative:extension/resources/github_com/redhat-developer/devspaces-vscode-extensions/releases/download/7_44-che-assets/vscode-java-debug-0.26.0.vsix'
+        - 'relative:extension/resources/open-vsx_org/api/vscjava/vscode-java-test/0_28_1/file/vscjava.vscode-java-test-0.28.1.vsix'
+      che-theia.eclipse.org/vscode-preferences:
+        java.server.launchMode: Standard
     container:
-      image: quay.io/eclipse/che-quarkus:7.37.2 
+      args:
+        - sh
+        - '-c'
+        - '${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}'
+      image: 'registry.redhat.io/devspaces/udi-rhel8@sha256:d55549aad15742f6f7310da0c7abc1e65dd5d3ad2e3efb8fbf414cf91b9efac7' 
       env:
         - name: QUARKUS_HTTP_HOST
           value: 0.0.0.0
@@ -27,6 +33,16 @@ components:
           value: '-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/user'
         - name: JAVA_OPTS
           value: '-XX:MaxRAMPercentage=50.0 -XX:+UseParallelGC -XX:MinHeapFreeRatio=10 -XX:MaxHeapFreeRatio=20 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xms20m -Djava.security.egd=file:/dev/./urandom -Duser.home=/home/user'
+        - name: PLUGIN_REMOTE_ENDPOINT_EXECUTABLE
+          value: /remote-endpoint/plugin-remote-endpoint
+        - name: THEIA_PLUGINS
+          value: 'local-dir:///plugins/sidecars/tools'
+        - name: CHE_DASHBOARD_URL
+          value: 'https://devspaces.apps.sandbox.x8i5.p1.openshiftapps.com'
+        - name: CHE_PLUGIN_REGISTRY_URL
+          value: 'https://devspaces.apps.sandbox.x8i5.p1.openshiftapps.com/plugin-registry/v3'
+        - name: CHE_PLUGIN_REGISTRY_INTERNAL_URL
+          value: 'http://plugin-registry.crw.svc:8080/v3'
       endpoints:
         - exposure: none
           name: debug
@@ -40,8 +56,13 @@ components:
       volumeMounts:
         - name: m2
           path: /home/user/.m2
+        - name: remote-endpoint
+          path: /remote-endpoint
+        - name: plugins
+          path: /plugins
       memoryLimit: 4G
       mountSources: true
+      sourceMapping: /projects
   - name: m2
     volume:
       size: 1G
