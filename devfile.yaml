@@ -66,6 +66,12 @@ components:
   - name: m2
     volume:
       size: 1G
+  - name: remote-endpoint
+    volume:
+      size: 256M
+  - name: plugins
+    volume:
+      size: 1G
 commands:
   - id: 1-generate
     exec:
